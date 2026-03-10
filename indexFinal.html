@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Evaluación del Estilo de Aprendizaje - Kolb</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<style>
+
+.btn-selected{
+background:#4f46e5;
+color:white;
+transform:scale(1.1);
+box-shadow:0 4px 10px rgba(0,0,0,.2);
+}
+
+.touch-target{
+min-width:44px;
+min-height:44px;
+}
+
+.option-desc{
+font-size:11px;
+color:#64748b;
+margin-top:4px;
+}
+
+.progress-bar{
+transition:width .4s ease;
+}
+
+</style>
+
+</head>
+
+<body class="bg-slate-50 min-h-screen md:py-8 md:px-4">
+
+<div class="max-w-5xl mx-auto bg-white md:rounded-2xl shadow-xl overflow-hidden">
+
+<div class="bg-indigo-600 p-8 text-white text-center">
+
+<h1 class="text-3xl font-extrabold uppercase">
+Evaluación del Estilo de Aprendizaje
+</h1>
+
+<p class="mt-1 text-indigo-100">
+Modelo de David Kolb
+</p>
+
+<div class="mt-4 flex flex-wrap justify-center gap-3 text-xs">
+
+<span class="bg-white/20 px-3 py-1 rounded-full font-bold">4: Muy representativo</span>
+<span class="bg-white/20 px-3 py-1 rounded-full font-bold">3: Bastante representativo</span>
+<span class="bg-white/20 px-3 py-1 rounded-full font-bold">2: Poco representativo</span>
+<span class="bg-white/20 px-3 py-1 rounded-full font-bold">1: Nada representativo</span>
+
+</div>
+
+</div>
+
+<div class="p-6 md:p-8">
+
+<div class="mb-6">
+
+<h2 class="text-lg font-bold mb-2">Progreso</h2>
+
+<div class="w-full bg-gray-200 rounded-full h-4">
+<div id="progressBar" class="progress-bar bg-indigo-600 h-4 rounded-full" style="width:0%"></div>
+</div>
+
+<p id="progressText" class="text-xs mt-2 text-gray-500">
+0 de 9 filas completadas
+</p>
+
+</div>
+
+<table class="w-full border-collapse text-sm">
+
+<thead class="bg-slate-100 text-xs uppercase font-bold">
+
+<tr>
+
+<th class="border p-3 text-left">Fila</th>
+
+<th class="border p-3 text-left">
+<div>🎯 Experiencia</div>
+<div class="text-[10px] font-normal">Sentir / experimentar</div>
+</th>
+
+<th class="border p-3 text-left">
+<div>👀 Observación</div>
+<div class="text-[10px] font-normal">Observar / reflexionar</div>
+</th>
+
+<th class="border p-3 text-left">
+<div>🧠 Conceptualización</div>
+<div class="text-[10px] font-normal">Pensar / analizar</div>
+</th>
+
+<th class="border p-3 text-left">
+<div>✋ Experimentación</div>
+<div class="text-[10px] font-normal">Aplicar / hacer</div>
+</th>
+
+</tr>
+
+</thead>
+
+<tbody id="testBody"></tbody>
+
+</table>
+
+<div id="resultContainer" class="hidden mt-10">
+
+<div id="captureArea" class="bg-indigo-600 text-white shadow-2xl rounded-xl p-8">
+
+<h3 class="text-3xl font-black mb-3 text-center" id="resTitle"></h3>
+
+<p class="opacity-90 mb-8 text-center">
+Tu forma predominante de aprender según el modelo de Kolb
+</p>
+
+<div id="styleContent"></div>
+
+</div>
+
+<div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+
+<button onclick="downloadImage()" class="bg-emerald-600 text-white p-4 rounded-xl font-bold hover:bg-emerald-700">
+Descargar imagen para WhatsApp
+</button>
+
+<button onclick="window.print()" class="bg-slate-800 text-white p-4 rounded-xl font-bold hover:bg-slate-900">
+Guardar PDF
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+const items=[
+
+{row:"A",opts:[
+["Discriminando","Analizo cuidadosamente antes de actuar"],
+["Observando","Prefiero observar primero"],
+["Pensando","Analizo las ideas con lógica"],
+["Practicando","Aprendo probando directamente"]
+]},
+
+{row:"B",opts:[
+["Receptivamente","Escucho y recibo información"],
+["Observando","Reflexiono antes de participar"],
+["Analíticamente","Estudio la información paso a paso"],
+["Aplicando","Intento aplicar lo aprendido"]
+]},
+
+{row:"C",opts:[
+["Sintiendo","Me guío por experiencias personales"],
+["Observando","Analizo antes de participar"],
+["Pensando","Reflexiono sobre las ideas"],
+["Haciendo","Prefiero aprender haciendo"]
+]},
+
+{row:"D",opts:[
+["Aceptando","Me adapto fácilmente"],
+["Reflexionando","Pienso antes de actuar"],
+["Evaluando","Analizo cuidadosamente"],
+["Experimentando","Pruebo nuevas ideas"]
+]},
+
+{row:"E",opts:[
+["Intuitivamente","Uso mi intuición"],
+["Reflexivamente","Analizo experiencias"],
+["Lógicamente","Busco coherencia en las ideas"],
+["Probando","Compruebo si funciona"]
+]},
+
+{row:"F",opts:[
+["Experiencia concreta","Aprendo con ejemplos reales"],
+["Observando","Prefiero observar"],
+["Conceptualizando","Trabajo con teorías"],
+["Activamente","Participo directamente"]
+]},
+
+{row:"G",opts:[
+["Presente","Me concentro en lo que ocurre ahora"],
+["Reflexivo","Analizo antes de actuar"],
+["Futuro","Pienso en las consecuencias"],
+["Práctico","Busco soluciones concretas"]
+]},
+
+{row:"H",opts:[
+["Experiencia","Aprendo viviendo situaciones"],
+["Observación","Observo cuidadosamente"],
+["Conceptualización","Organizo ideas"],
+["Experimentación","Pongo a prueba ideas"]
+]},
+
+{row:"I",opts:[
+["Afectivo","Las emociones influyen"],
+["Reservado","Prefiero observar"],
+["Racional","Uso la lógica"],
+["Responsable","Aplico lo aprendido"]
+]}
+
+]
+
+let scores=Array(items.length).fill(null).map(()=>[0,0,0,0])
+
+function render(){
+
+const body=document.getElementById("testBody")
+
+body.innerHTML=items.map((item,r)=>`
+
+<tr>
+
+<td class="border p-3 font-bold">${item.row}</td>
+
+${item.opts.map((opt,c)=>`
+
+<td class="border p-3">
+
+<p class="font-semibold">${opt[0]}</p>
+<p class="option-desc">${opt[1]}</p>
+
+<div class="flex gap-1 justify-center mt-2">
+
+${[1,2,3,4].map(v=>`
+
+<button onclick="setVal(${r},${c},${v})"
+class="touch-target border px-2 py-1 rounded ${scores[r][c]==v?'btn-selected':''}">
+${v}
+</button>
+
+`).join("")}
+
+</div>
+
+</td>
+
+`).join("")}
+
+</tr>
+
+`).join("")
+
+}
+
+function setVal(r,c,v){
+
+const row=scores[r]
+
+const idx=row.indexOf(v)
+
+if(idx!=-1 && idx!=c) row[idx]=0
+
+row[c]=row[c]==v?0:v
+
+render()
+updateProgress()
+update()
+
+}
+
+function updateProgress(){
+
+let completed=0
+
+scores.forEach(r=>{
+if(r.includes(1)&&r.includes(2)&&r.includes(3)&&r.includes(4)) completed++
+})
+
+let percent=(completed/items.length)*100
+
+document.getElementById("progressBar").style.width=percent+"%"
+document.getElementById("progressText").innerText=completed+" de 9 filas completadas"
+
+}
+
+function calculate(){
+
+let EC=0
+let OR=0
+let CA=0
+let EA=0
+
+scores.forEach((row,i)=>{
+
+if([1,2,3,4,6,7].includes(i)) EC+=row[0]
+if([0,2,5,6,7,8].includes(i)) OR+=row[1]
+if([1,2,3,4,7,8].includes(i)) CA+=row[2]
+if([0,2,5,6,7,8].includes(i)) EA+=row[3]
+
+})
+
+return{EC,OR,CA,EA}
+
+}
+
+function detectStyle(x,y){
+
+if(x>=0 && y>=0) return "🚀 ACOMODADOR"
+if(x<0 && y>=0) return "🎨 DIVERGENTE"
+if(x<0 && y<0) return "📚 ASIMILADOR"
+if(x>=0 && y<0) return "🧩 CONVERGENTE"
+
+}
+
+function update(){
+
+const complete=scores.every(r=>r.includes(1)&&r.includes(2)&&r.includes(3)&&r.includes(4))
+
+if(!complete) return
+
+const {EC,OR,CA,EA}=calculate()
+
+const x=EA-OR
+const y=CA-EC
+
+const style=detectStyle(x,y)
+
+document.getElementById("resTitle").innerText=style
+
+document.getElementById("resultContainer").classList.remove("hidden")
+
+document.getElementById("styleContent").innerHTML=`
+
+<div class="bg-white text-gray-800 rounded-xl p-6 grid md:grid-cols-3 gap-6">
+
+<div>
+<h4 class="font-bold text-indigo-600 mb-2">🧠 Características</h4>
+<ul class="text-sm space-y-1">
+<li>• Forma particular de abordar el aprendizaje</li>
+<li>• Preferencia en cómo procesas la información</li>
+<li>• Tendencias en tu forma de estudiar</li>
+</ul>
+</div>
+
+<div>
+<h4 class="font-bold text-green-600 mb-2">🚀 Aprendes mejor cuando</h4>
+<ul class="text-sm space-y-1">
+<li>• Las actividades se adaptan a tu estilo</li>
+<li>• Puedes participar activamente</li>
+<li>• Se presentan experiencias significativas</li>
+</ul>
+</div>
+
+<div>
+<h4 class="font-bold text-red-500 mb-2">⚠️ Puede costarte más</h4>
+<ul class="text-sm space-y-1">
+<li>• Actividades que no coinciden con tu estilo</li>
+<li>• Métodos de enseñanza muy diferentes a tu preferencia</li>
+<li>• Situaciones que requieren otro tipo de enfoque</li>
+</ul>
+</div>
+
+</div>
+`
+
+}
+
+function downloadImage(){
+
+const element=document.getElementById("captureArea")
+
+html2canvas(element,{scale:2}).then(canvas=>{
+
+const link=document.createElement("a")
+link.download="resultado-estilo-aprendizaje.png"
+link.href=canvas.toDataURL()
+link.click()
+
+})
+
+}
+
+render()
+
+</script>
+
+</body>
+</html>
