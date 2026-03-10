@@ -45,7 +45,7 @@
             <h2 class="font-bold mb-2">📋 Instrucciones</h2>
             <ul class="list-disc ml-6 space-y-1">
                 <li>En cada fila debes asignar un número del <strong>1 al 4</strong>.</li>
-                <li><strong>4</strong> es la opción que más te representa, <strong>1</strong> la que menos.</li>
+                <li><strong>4</strong> es lo que más te representa, <strong>1</strong> lo que menos.</li>
                 <li><strong>No puedes repetir números dentro de la misma fila.</strong></li>
             </ul>
         </div>
@@ -59,13 +59,13 @@
         </div>
 
         <table class="desktop-table w-full border-collapse text-sm mt-4">
-            <thead class="bg-slate-100 text-xs uppercase font-bold">
+            <thead class="bg-slate-100 text-xs uppercase font-bold text-center">
                 <tr>
                     <th class="border p-3 text-left w-12">Fila</th>
-                    <th class="border p-3 text-left">🎯 Experiencia (EC)</th>
-                    <th class="border p-3 text-left">👀 Observación (OR)</th>
-                    <th class="border p-3 text-left">🧠 Conceptu. (CA)</th>
-                    <th class="border p-3 text-left">✋ Experim. (EA)</th>
+                    <th class="border p-3">🎯 Experiencia (EC)</th>
+                    <th class="border p-3">👀 Observación (OR)</th>
+                    <th class="border p-3">🧠 Conceptu. (CA)</th>
+                    <th class="border p-3">✋ Experim. (EA)</th>
                 </tr>
             </thead>
             <tbody id="testBody"></tbody>
@@ -89,20 +89,66 @@
 </div>
 
 <script>
-    // Datos actualizados según el inventario de Kolb estándar
-    const questions = [
-        ["Diferenciando (EC)", "Ensayando (OR)", "Analizando (CA)", "Practicando (EA)"],
-        ["Receptivo", "Imparcial", "Analítico", "Imparcial"],
-        ["Sintiendo", "Observando", "Pensando", "Haciendo"],
-        ["Aceptando", "Arriesgando", "Evaluando", "Consciente"],
-        ["Intuitivo", "Productivo", "Lógico", "Cuestionador"],
-        ["Abstracto", "Observador", "Concreto", "Activo"],
-        ["Orientado al presente", "Reflexivo", "Orientado al futuro", "Pragmático"],
-        ["Experiencia", "Observación", "Conceptualización", "Experimentación"],
-        ["Intenso", "Reservado", "Racional", "Responsable"]
+    // Base de datos del Test de Kolb (9 Filas x 4 Dimensiones)
+    // Cada elemento: [Título, Descripción, Identificador]
+    const testData = [
+        [
+            ["Sensitivo (EC)", "Me fío de mis sensaciones y sentimientos"],
+            ["Observador (OR)", "Miro y escucho atentamente"],
+            ["Teórico (CA)", "Pienso en las ideas y conceptos"],
+            ["Pragmático (EA)", "Hago las cosas y busco resultados"]
+        ],
+        [
+            ["Receptivo (EC)", "Acepto nuevas experiencias"],
+            ["Imparcial (OR)", "Observo sin prejuicios ni juicios"],
+            ["Analítico (CA)", "Descompongo los problemas en partes"],
+            ["Directo (EA)", "Actúo inmediatamente sobre la situación"]
+        ],
+        [
+            ["Intuitivo (EC)", "Sigo mis corazonadas y mi instinto"],
+            ["Reflexivo (OR)", "Pienso bien las cosas antes de hablar"],
+            ["Lógico (CA)", "Uso el razonamiento racional"],
+            ["Activo (EA)", "Me gusta estar en movimiento"]
+        ],
+        [
+            ["Abierto (EC)", "Acepto lo que viene sin resistencia"],
+            ["Paciente (OR)", "Espero el momento adecuado para actuar"],
+            ["Evaluador (CA)", "Analizo las consecuencias lógicas"],
+            ["Arriesgado (EA)", "Pruebo nuevas soluciones y retos"]
+        ],
+        [
+            ["Emocional (EC)", "Reacciono con sentimientos fuertes"],
+            ["Reservado (OR)", "Soy callado y observo con discreción"],
+            ["Racional (CA)", "Busco la verdad lógica y objetiva"],
+            ["Responsable (EA)", "Me encargo de que los resultados ocurran"]
+        ],
+        [
+            ["Concreto (EC)", "Me baso en hechos reales y tangibles"],
+            ["Atento (OR)", "Escucho con cuidado lo que otros dicen"],
+            ["Abstracto (CA)", "Uso conceptos teóricos y modelos"],
+            ["Práctico (EA)", "Busco aplicaciones útiles para todo"]
+        ],
+        [
+            ["Presente (EC)", "Vivo el momento actual y el ahora"],
+            ["Retrospectivo (OR)", "Evalúo lo sucedido anteriormente"],
+            ["Futurista (CA)", "Planeo los siguientes pasos lógicamente"],
+            ["Ejecutor (EA)", "Llevo a cabo el plan de acción"]
+        ],
+        [
+            ["Involucrado (EC)", "Me comprometo con la tarea actual"],
+            ["Perceptivo (OR)", "Noto pequeños detalles en el entorno"],
+            ["Estructurado (CA)", "Organizo mis pensamientos con orden"],
+            ["Productivo (EA)", "Finalizo lo que empiezo con eficacia"]
+        ],
+        [
+            ["Espontáneo (EC)", "Actúo por impulso natural y fluido"],
+            ["Cuidadoso (OR)", "Reviso todo dos veces antes de cerrar"],
+            ["Sistemático (CA)", "Sigo un orden y método establecido"],
+            ["Competente (EA)", "Me aseguro de que la solución funcione"]
+        ]
     ];
 
-    const rows = questions.length;
+    const rows = testData.length;
     let scores = Array(rows).fill(null).map(() => [0, 0, 0, 0]);
 
     function render() {
@@ -111,18 +157,20 @@
         body.innerHTML = "";
         mobile.innerHTML = "";
 
-        questions.forEach((qRow, r) => {
-            // Render Desktop
+        testData.forEach((rowOptions, r) => {
+            // Render Escritorio
             let tr = document.createElement("tr");
-            tr.innerHTML = `<td class="border p-3 font-bold bg-slate-50">${r + 1}</td>`;
-            qRow.forEach((text, c) => {
+            tr.innerHTML = `<td class="border p-3 font-bold bg-slate-50 text-center text-indigo-700">${String.fromCharCode(65 + r)}</td>`;
+            
+            rowOptions.forEach((opt, c) => {
                 tr.innerHTML += `
-                <td class="border p-3">
-                    <p class="font-semibold text-indigo-900">${text}</p>
+                <td class="border p-3 text-center">
+                    <p class="font-bold text-indigo-900">${opt[0]}</p>
+                    <p class="option-desc">${opt[1]}</p>
                     <div class="flex gap-1 justify-center mt-3">
                         ${[1, 2, 3, 4].map(v => `
                             <button onclick="setVal(${r},${c},${v})" 
-                            class="touch-target border text-xs px-2 py-1 rounded ${scores[r][c] == v ? 'btn-selected' : 'bg-white'}">
+                            class="touch-target border text-xs px-2 py-1 rounded transition-all ${scores[r][c] == v ? 'btn-selected' : 'bg-white hover:bg-slate-100'}">
                             ${v}
                             </button>
                         `).join("")}
@@ -131,18 +179,19 @@
             });
             body.appendChild(tr);
 
-            // Render Mobile
+            // Render Móvil
             let mDiv = document.createElement("div");
-            mDiv.className = "mobile-row";
-            mDiv.innerHTML = `<h3 class="font-bold mb-3 border-b pb-1 text-indigo-600">Pregunta ${r + 1}</h3>`;
-            qRow.forEach((text, c) => {
+            mDiv.className = "mobile-row shadow-sm";
+            mDiv.innerHTML = `<h3 class="font-bold mb-3 border-b pb-1 text-indigo-600">Fila ${String.fromCharCode(65 + r)}</h3>`;
+            rowOptions.forEach((opt, c) => {
                 mDiv.innerHTML += `
                 <div class="mb-4">
-                    <p class="font-semibold text-sm mb-2">${text}</p>
+                    <p class="font-bold text-sm text-indigo-900">${opt[0]}</p>
+                    <p class="option-desc mb-2">${opt[1]}</p>
                     <div class="flex gap-2">
                         ${[1, 2, 3, 4].map(v => `
                             <button onclick="setVal(${r},${c},${v})" 
-                            class="touch-target border flex-1 py-2 rounded ${scores[r][c] == v ? 'btn-selected' : ''}">
+                            class="touch-target border flex-1 py-2 rounded transition-all ${scores[r][c] == v ? 'btn-selected' : 'bg-slate-50'}">
                             ${v}
                             </button>
                         `).join("")}
@@ -154,33 +203,24 @@
     }
 
     function setVal(r, c, v) {
-        const name = document.getElementById("studentName").value.trim();
+        const nameInput = document.getElementById("studentName");
+        const name = nameInput.value.trim();
         if (!name) {
             document.getElementById("nameError").classList.remove("hidden");
+            nameInput.focus();
             window.scrollTo({top: 0, behavior: 'smooth'});
             return;
         }
 
         const row = scores[r];
         const existingIdx = row.indexOf(v);
-        
-        // Si el valor ya existe en otra columna de la misma fila, lo borramos de allá
         if (existingIdx !== -1 && existingIdx !== c) row[existingIdx] = 0;
-        
-        // Toggle: si hace clic en el mismo valor, lo quita, si no, lo pone
         row[c] = (row[c] === v) ? 0 : v;
 
         render();
         updateProgress();
-        checkCompletion();
+        checkAndCalculate();
     }
-
-    // Listener para el tooltip del nombre
-    document.getElementById("studentName").addEventListener("input", (e) => {
-        const hasValue = e.target.value.trim() !== "";
-        document.getElementById("nameTooltip").style.display = hasValue ? "none" : "inline-block";
-        document.getElementById("nameError").classList.toggle("hidden", hasValue);
-    });
 
     function updateProgress() {
         let completed = scores.filter(r => !r.includes(0)).length;
@@ -189,27 +229,24 @@
         document.getElementById("progressText").innerText = `${completed} de ${rows} filas completadas`;
     }
 
-    function checkCompletion() {
-        const isComplete = scores.every(r => !r.includes(0));
-        if (isComplete) calculateResults();
-    }
+    function checkAndCalculate() {
+        if (scores.every(r => !r.includes(0))) {
+            let EC = 0, OR = 0, CA = 0, EA = 0;
+            scores.forEach(r => {
+                EC += r[0]; OR += r[1]; CA += r[2]; EA += r[3];
+            });
 
-    function calculateResults() {
-        let EC = 0, OR = 0, CA = 0, EA = 0;
-        scores.forEach(r => {
-            EC += r[0]; OR += r[1]; CA += r[2]; EA += r[3];
-        });
+            const x = EA - OR;
+            const y = CA - EC;
 
-        const x = EA - OR;
-        const y = CA - EC;
+            let style = "";
+            if (x >= 0 && y >= 0) style = "🚀 ACOMODADOR";
+            else if (x < 0 && y >= 0) style = "🎨 DIVERGENTE";
+            else if (x < 0 && y < 0) style = "📚 ASIMILADOR";
+            else style = "🧩 CONVERGENTE";
 
-        let style = "";
-        if (x >= 0 && y >= 0) style = "🚀 ACOMODADOR";
-        else if (x < 0 && y >= 0) style = "🎨 DIVERGENTE";
-        else if (x < 0 && y < 0) style = "📚 ASIMILADOR";
-        else style = "🧩 CONVERGENTE";
-
-        showResults(style);
+            showResults(style);
+        }
     }
 
     function showResults(style) {
@@ -217,24 +254,30 @@
         document.getElementById("resTitle").innerText = style;
         document.getElementById("studentResult").innerText = "👤 Aprendiz: " + name;
 
-        const pedagogicData = {
-            "🎨 DIVERGENTE": "Aprende mejor observando situaciones desde distintas perspectivas y participando en discusiones.",
-            "📚 ASIMILADOR": "Prefiere información estructurada, teoría y análisis conceptual.",
-            "🧩 CONVERGENTE": "Destaca aplicando ideas en la práctica y resolviendo problemas.",
-            "🚀 ACOMODADOR": "Aprende principalmente mediante la acción directa y la experiencia práctica."
+        const dataInfo = {
+            "🎨 DIVERGENTE": "Se destaca por su capacidad imaginativa y por considerar situaciones desde muchos puntos de vista.",
+            "📚 ASIMILADOR": "Su fuerte reside en la capacidad para crear modelos teóricos y el razonamiento inductivo.",
+            "🧩 CONVERGENTE": "Es muy bueno para la aplicación práctica de ideas y la resolución de problemas específicos.",
+            "🚀 ACOMODADOR": "Se desempeña mejor en la experiencia concreta y la acción. Le gusta involucrarse en nuevas experiencias."
         };
 
         document.getElementById("styleContent").innerHTML = `
             <div class="bg-white text-gray-800 rounded-xl p-6 grid md:grid-cols-3 gap-6">
-                <div><h4 class="font-bold text-indigo-600 mb-2">🧠 Características</h4><ul class="text-sm list-disc ml-4"><li>Sociable</li><li>Genera ideas</li><li>Empático</li></ul></div>
-                <div><h4 class="font-bold text-green-600 mb-2">🚀 Aprendes mejor</h4><ul class="text-sm list-disc ml-4"><li>Lluvia de ideas</li><li>Trabajo en equipo</li><li>Ejemplos reales</li></ul></div>
-                <div><h4 class="font-bold text-red-500 mb-2">⚠️ Desafíos</h4><ul class="text-sm list-disc ml-4"><li>Teoría pura</li><li>Trabajo solitario</li><li>Falta de feedback</li></ul></div>
+                <div><h4 class="font-bold text-indigo-600 mb-2">🧠 Perfil</h4><p class="text-xs">Este estilo refleja tu forma particular de procesar la información y enfrentar nuevos retos.</p></div>
+                <div><h4 class="font-bold text-green-600 mb-2">🚀 Fortalezas</h4><p class="text-xs">Aprovechas mejor el tiempo cuando las actividades son prácticas y dinámicas.</p></div>
+                <div><h4 class="font-bold text-red-500 mb-2">⚠️ Retos</h4><p class="text-xs">Te puede costar un poco más cuando la enseñanza es puramente teórica o desorganizada.</p></div>
             </div>`;
 
-        document.getElementById("pedagogicContent").innerHTML = `<h4 class="font-bold mb-2">📘 Interpretación</h4><p>${pedagogicData[style] || ""}</p>`;
+        document.getElementById("pedagogicContent").innerHTML = `<h4 class="font-bold mb-2">📘 Interpretación</h4><p>${dataInfo[style]}</p>`;
         document.getElementById("resultContainer").classList.remove("hidden");
         document.getElementById("resultContainer").scrollIntoView({ behavior: 'smooth' });
     }
+
+    document.getElementById("studentName").addEventListener("input", (e) => {
+        const hasValue = e.target.value.trim() !== "";
+        document.getElementById("nameTooltip").style.display = hasValue ? "none" : "inline-block";
+        document.getElementById("nameError").classList.toggle("hidden", hasValue);
+    });
 
     function downloadImage() {
         html2canvas(document.getElementById("captureArea"), { scale: 2 }).then(canvas => {
@@ -249,3 +292,4 @@
 </script>
 </body>
 </html>
+
