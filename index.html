@@ -1,497 +1,251 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Evaluación del Estilo de Aprendizaje - Kolb</title>
-
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-
-<style>
-
-.btn-selected{
-background:#4f46e5;
-color:white;
-transform:scale(1.1);
-box-shadow:0 4px 10px rgba(0,0,0,.2);
-}
-
-.touch-target{
-min-width:44px;
-min-height:44px;
-}
-
-.option-desc{
-font-size:11px;
-color:#64748b;
-margin-top:4px;
-}
-
-.progress-bar{
-transition:width .4s ease;
-}
-
-.sticky-progress{
-position:sticky;
-top:0;
-z-index:1000;
-background:white;
-padding:10px;
-border-bottom:1px solid #e5e7eb;
-}
-
-.mobile-row{
-border:1px solid #e5e7eb;
-border-radius:10px;
-padding:12px;
-margin-bottom:12px;
-background:white;
-}
-
-@media (max-width:768px){
-
-.desktop-table{
-display:none;
-}
-
-.mobile-view{
-display:block;
-}
-
-}
-
-@media (min-width:769px){
-
-.mobile-view{
-display:none;
-}
-
-}
-
-/* Tooltip animado */
-
-.name-tooltip{
-display:inline-block;
-margin-top:6px;
-background:#4f46e5;
-color:white;
-padding:6px 10px;
-border-radius:8px;
-font-size:12px;
-animation:bounce 1.4s infinite;
-}
-
-@keyframes bounce{
-0%{transform:translateY(0)}
-50%{transform:translateY(-4px)}
-100%{transform:translateY(0)}
-}
-
-</style>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación del Estilo de Aprendizaje - Kolb</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        .btn-selected { background: #4f46e5; color: white; transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,.2); }
+        .touch-target { min-width: 44px; min-height: 44px; }
+        .option-desc { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.2; }
+        .progress-bar { transition: width .4s ease; }
+        .sticky-progress { position: sticky; top: 0; z-index: 1000; background: white; padding: 10px; border-bottom: 1px solid #e5e7eb; }
+        .mobile-row { border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; margin-bottom: 12px; background: white; }
+        @media (max-width: 768px) { .desktop-table { display: none; } .mobile-view { display: block; } }
+        @media (min-width: 769px) { .mobile-view { display: none; } }
+        .name-tooltip { display: inline-block; margin-top: 6px; background: #4f46e5; color: white; padding: 6px 10px; border-radius: 8px; font-size: 12px; animation: bounce 1.4s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
+    </style>
 </head>
-
 <body class="bg-slate-50 min-h-screen">
 
 <div class="max-w-5xl mx-auto bg-white shadow-xl">
+    <div class="bg-indigo-600 p-8 text-white text-center">
+        <h1 class="text-3xl font-extrabold uppercase">🧠 Evaluación del Estilo de Aprendizaje</h1>
+        <p class="mt-1 text-indigo-100">Modelo de David Kolb</p>
+        <div class="mt-4 flex flex-wrap justify-center gap-3 text-xs">
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">4 ⭐ Muy representativo</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">3 👍 Bastante</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">2 🤔 Poco</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">1 ❌ Nada</span>
+        </div>
+    </div>
 
-<div class="bg-indigo-600 p-8 text-white text-center">
+    <div class="p-6 md:p-8">
+        <div class="mb-6">
+            <label class="font-bold text-sm">👤 Nombre del aprendiz</label>
+            <input id="studentName" type="text" required class="w-full border rounded p-2 mt-1" placeholder="Escribe tu nombre">
+            <div id="nameTooltip" class="name-tooltip">👉 Escribe tu nombre para comenzar el test</div>
+            <p id="nameError" class="text-red-500 text-xs mt-1 hidden">⚠️ Debes escribir tu nombre antes de responder.</p>
+        </div>
 
-<h1 class="text-3xl font-extrabold uppercase">
-🧠 Evaluación del Estilo de Aprendizaje
-</h1>
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm mb-6">
+            <h2 class="font-bold mb-2">📋 Instrucciones</h2>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>En cada fila debes asignar un número del <strong>1 al 4</strong>.</li>
+                <li><strong>4</strong> es la opción que más te representa, <strong>1</strong> la que menos.</li>
+                <li><strong>No puedes repetir números dentro de la misma fila.</strong></li>
+            </ul>
+        </div>
 
-<p class="mt-1 text-indigo-100">
-Modelo de David Kolb
-</p>
+        <div class="sticky-progress">
+            <h2 class="text-lg font-bold mb-2">📊 Progreso</h2>
+            <div class="w-full bg-gray-200 rounded-full h-4">
+                <div id="progressBar" class="progress-bar bg-indigo-600 h-4 rounded-full" style="width:0%"></div>
+            </div>
+            <p id="progressText" class="text-xs mt-2 text-gray-500">0 de 9 filas completadas</p>
+        </div>
 
-<div class="mt-4 flex flex-wrap justify-center gap-3 text-xs">
+        <table class="desktop-table w-full border-collapse text-sm mt-4">
+            <thead class="bg-slate-100 text-xs uppercase font-bold">
+                <tr>
+                    <th class="border p-3 text-left w-12">Fila</th>
+                    <th class="border p-3 text-left">🎯 Experiencia (EC)</th>
+                    <th class="border p-3 text-left">👀 Observación (OR)</th>
+                    <th class="border p-3 text-left">🧠 Conceptu. (CA)</th>
+                    <th class="border p-3 text-left">✋ Experim. (EA)</th>
+                </tr>
+            </thead>
+            <tbody id="testBody"></tbody>
+        </table>
 
-<span class="bg-white/20 px-3 py-1 rounded-full font-bold">4 ⭐ Muy representativo</span>
-<span class="bg-white/20 px-3 py-1 rounded-full font-bold">3 👍 Bastante</span>
-<span class="bg-white/20 px-3 py-1 rounded-full font-bold">2 🤔 Poco</span>
-<span class="bg-white/20 px-3 py-1 rounded-full font-bold">1 ❌ Nada</span>
+        <div id="mobileBody" class="mobile-view mt-4"></div>
 
-</div>
-
-</div>
-
-<div class="p-6 md:p-8">
-
-<div class="mb-6">
-
-<label class="font-bold text-sm">👤 Nombre del aprendiz</label>
-
-<input id="studentName" type="text"
-required
-class="w-full border rounded p-2 mt-1"
-placeholder="Escribe tu nombre">
-
-<!-- Tooltip UX -->
-<div id="nameTooltip" class="name-tooltip">
-👉 Escribe tu nombre para comenzar el test
-</div>
-
-<p id="nameError" class="text-red-500 text-xs mt-1 hidden">
-⚠️ Debes escribir tu nombre antes de responder.
-</p>
-
-</div>
-
-<div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm mb-6">
-
-<h2 class="font-bold mb-2">📋 Instrucciones</h2>
-
-<ul class="list-disc ml-6 space-y-1">
-<li>En cada fila debes asignar un número del <strong>1 al 4</strong>.</li>
-<li><strong>4</strong> es la opción que más te representa.</li>
-<li><strong>1</strong> es la que menos te representa.</li>
-<li>No puedes repetir números dentro de la misma fila.</li>
-</ul>
-
-</div>
-
-<div class="sticky-progress">
-
-<h2 class="text-lg font-bold mb-2">📊 Progreso</h2>
-
-<div class="w-full bg-gray-200 rounded-full h-4">
-<div id="progressBar" class="progress-bar bg-indigo-600 h-4 rounded-full" style="width:0%"></div>
-</div>
-
-<p id="progressText" class="text-xs mt-2 text-gray-500">
-0 de 9 filas completadas
-</p>
-
-</div>
-
-<table class="desktop-table w-full border-collapse text-sm mt-4">
-
-<thead class="bg-slate-100 text-xs uppercase font-bold">
-
-<tr>
-
-<th class="border p-3 text-left">Fila</th>
-
-<th class="border p-3 text-left">🎯 Experiencia</th>
-
-<th class="border p-3 text-left">👀 Observación</th>
-
-<th class="border p-3 text-left">🧠 Conceptualización</th>
-
-<th class="border p-3 text-left">✋ Experimentación</th>
-
-</tr>
-
-</thead>
-
-<tbody id="testBody"></tbody>
-
-</table>
-
-<div id="mobileBody" class="mobile-view mt-4"></div>
-
-<div id="resultContainer" class="hidden mt-10">
-
-<div id="captureArea" class="bg-indigo-600 text-white shadow-2xl rounded-xl p-8">
-
-<h3 class="text-3xl font-black mb-2 text-center" id="resTitle"></h3>
-
-<p id="studentResult" class="text-center mb-6"></p>
-
-<div id="styleContent"></div>
-
-<div id="pedagogicContent" class="mt-6 bg-white text-gray-800 rounded-xl p-6"></div>
-
-</div>
-
-<div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-<button onclick="downloadImage()" class="bg-emerald-600 text-white p-4 rounded-xl font-bold hover:bg-emerald-700">
-📥 Descargar imagen
-</button>
-
-<button onclick="window.print()" class="bg-slate-800 text-white p-4 rounded-xl font-bold hover:bg-slate-900">
-📄 Guardar PDF
-</button>
-
-</div>
-
-</div>
-
-</div>
-
+        <div id="resultContainer" class="hidden mt-10">
+            <div id="captureArea" class="bg-indigo-600 text-white shadow-2xl rounded-xl p-8">
+                <h3 class="text-3xl font-black mb-2 text-center" id="resTitle"></h3>
+                <p id="studentResult" class="text-center mb-6"></p>
+                <div id="styleContent"></div>
+                <div id="pedagogicContent" class="mt-6 bg-white text-gray-800 rounded-xl p-6"></div>
+            </div>
+            <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="downloadImage()" class="bg-emerald-600 text-white p-4 rounded-xl font-bold hover:bg-emerald-700">📥 Descargar imagen</button>
+                <button onclick="window.print()" class="bg-slate-800 text-white p-4 rounded-xl font-bold hover:bg-slate-900">📄 Guardar PDF</button>
+            </div>
+        </div>
+    </div>
 </div>
 
 <script>
-
-const rows=9
-
-const options=[
-["Discriminando","Analizo cuidadosamente antes de actuar"],
-["Observando","Prefiero observar primero"],
-["Pensando","Analizo ideas con lógica"],
-["Practicando","Aprendo probando directamente"]
-]
-
-let scores=Array(rows).fill(null).map(()=>[0,0,0,0])
-
-function render(){
-
-const body=document.getElementById("testBody")
-const mobile=document.getElementById("mobileBody")
-
-body.innerHTML=""
-mobile.innerHTML=""
-
-for(let r=0;r<rows;r++){
-
-body.innerHTML+=`
-<tr>
-<td class="border p-3 font-bold">${String.fromCharCode(65+r)}</td>
-
-${options.map((opt,c)=>`
-<td class="border p-3">
-
-<p class="font-semibold">${opt[0]}</p>
-<p class="option-desc">${opt[1]}</p>
-
-<div class="flex gap-1 justify-center mt-2">
-
-${[1,2,3,4].map(v=>`
-<button onclick="setVal(${r},${c},${v})"
-class="touch-target border px-2 py-1 rounded ${scores[r][c]==v?'btn-selected':''}">
-${v}
-</button>
-`).join("")}
-
-</div>
-
-</td>
-`).join("")}
-
-</tr>
-`
-
-let mobileRow=`<div class="mobile-row"><h3 class="font-bold mb-2">Fila ${String.fromCharCode(65+r)}</h3>`
-
-options.forEach((opt,c)=>{
-
-mobileRow+=`
-<p class="font-semibold">${opt[0]}</p>
-<p class="option-desc">${opt[1]}</p>
-
-<div class="flex gap-2 mb-3">
-
-${[1,2,3,4].map(v=>`
-<button onclick="setVal(${r},${c},${v})"
-class="touch-target border px-3 py-1 rounded ${scores[r][c]==v?'btn-selected':''}">
-${v}
-</button>
-`).join("")}
-
-</div>
-`
-
-})
-
-mobileRow+=`</div>`
-
-mobile.innerHTML+=mobileRow
-
-}
-
-}
-
-function setVal(r,c,v){
-
-const name=document.getElementById("studentName").value.trim()
-const tooltip=document.getElementById("nameTooltip")
-const error=document.getElementById("nameError")
-
-if(name===""){
-tooltip.style.display="inline-block"
-error.classList.remove("hidden")
-return
-}else{
-tooltip.style.display="none"
-error.classList.add("hidden")
-}
-
-const row=scores[r]
-
-const idx=row.indexOf(v)
-
-if(idx!=-1 && idx!=c) row[idx]=0
-
-row[c]=row[c]==v?0:v
-
-render()
-updateProgress()
-update()
-
-}
-
-document.getElementById("studentName").addEventListener("input",()=>{
-
-const name=document.getElementById("studentName").value.trim()
-const tooltip=document.getElementById("nameTooltip")
-
-if(name!==""){
-tooltip.style.display="none"
-}else{
-tooltip.style.display="inline-block"
-}
-
-})
-
-function updateProgress(){
-
-let completed=0
-
-scores.forEach(r=>{
-if(r.includes(1)&&r.includes(2)&&r.includes(3)&&r.includes(4)) completed++
-})
-
-let percent=(completed/rows)*100
-
-document.getElementById("progressBar").style.width=percent+"%"
-document.getElementById("progressText").innerText=completed+" de 9 filas completadas"
-
-}
-
-function calculate(){
-
-let EC=0,OR=0,CA=0,EA=0
-
-scores.forEach(r=>{
-EC+=r[0]
-OR+=r[1]
-CA+=r[2]
-EA+=r[3]
-})
-
-return{EC,OR,CA,EA}
-
-}
-
-function detectStyle(x,y){
-
-if(x>=0 && y>=0) return "🚀 ACOMODADOR"
-if(x<0 && y>=0) return "🎨 DIVERGENTE"
-if(x<0 && y<0) return "📚 ASIMILADOR"
-return "🧩 CONVERGENTE"
-
-}
-
-function pedagogic(style){
-
-const data={
-
-"🎨 DIVERGENTE":"Aprende mejor observando situaciones desde distintas perspectivas y participando en discusiones.",
-
-"📚 ASIMILADOR":"Prefiere información estructurada, teoría y análisis conceptual.",
-
-"🧩 CONVERGENTE":"Destaca aplicando ideas en la práctica y resolviendo problemas.",
-
-"🚀 ACOMODADOR":"Aprende principalmente mediante la acción directa y la experiencia práctica."
-
-}
-
-return data[style]
-
-}
-
-function update(){
-
-const name=document.getElementById("studentName").value.trim()
-const nameError=document.getElementById("nameError")
-
-if(name===""){
-nameError.classList.remove("hidden")
-return
-}else{
-nameError.classList.add("hidden")
-}
-
-const complete=scores.every(r=>r.includes(1)&&r.includes(2)&&r.includes(3)&&r.includes(4))
-
-if(!complete) return
-
-const {EC,OR,CA,EA}=calculate()
-
-const x=EA-OR
-const y=CA-EC
-
-const style=detectStyle(x,y)
-
-document.getElementById("resTitle").innerText=style
-
-document.getElementById("studentResult").innerText="👤 Aprendiz: "+name
-
-document.getElementById("styleContent").innerHTML=`
-
-<div class="bg-white text-gray-800 rounded-xl p-6 grid md:grid-cols-3 gap-6">
-
-<div>
-<h4 class="font-bold text-indigo-600 mb-2">🧠 Características</h4>
-<ul class="text-sm space-y-1">
-<li>Forma particular de abordar el aprendizaje</li>
-<li>Preferencia en cómo procesas información</li>
-<li>Tendencias en tu forma de estudiar</li>
-</ul>
-</div>
-
-<div>
-<h4 class="font-bold text-green-600 mb-2">🚀 Aprendes mejor cuando</h4>
-<ul class="text-sm space-y-1">
-<li>Las actividades coinciden con tu estilo</li>
-<li>Puedes participar activamente</li>
-<li>Se presentan experiencias significativas</li>
-</ul>
-</div>
-
-<div>
-<h4 class="font-bold text-red-500 mb-2">⚠️ Puede costarte más</h4>
-<ul class="text-sm space-y-1">
-<li>Actividades alejadas de tu estilo</li>
-<li>Métodos de enseñanza muy distintos</li>
-<li>Situaciones que requieren otro enfoque</li>
-</ul>
-</div>
-
-</div>
-`
-
-document.getElementById("pedagogicContent").innerHTML=`
-<h4 class="font-bold mb-2">📘 Interpretación pedagógica</h4>
-<p>${pedagogic(style)}</p>
-`
-
-document.getElementById("resultContainer").classList.remove("hidden")
-
-}
-
-function downloadImage(){
-
-html2canvas(document.getElementById("captureArea"),{scale:2}).then(canvas=>{
-
-const link=document.createElement("a")
-link.download="resultado_estilo_aprendizaje.png"
-link.href=canvas.toDataURL()
-link.click()
-
-})
-
-}
-
-render()
-
+    // Datos actualizados según el inventario de Kolb estándar
+    const questions = [
+        ["Diferenciando (EC)", "Ensayando (OR)", "Analizando (CA)", "Practicando (EA)"],
+        ["Receptivo", "Imparcial", "Analítico", "Imparcial"],
+        ["Sintiendo", "Observando", "Pensando", "Haciendo"],
+        ["Aceptando", "Arriesgando", "Evaluando", "Consciente"],
+        ["Intuitivo", "Productivo", "Lógico", "Cuestionador"],
+        ["Abstracto", "Observador", "Concreto", "Activo"],
+        ["Orientado al presente", "Reflexivo", "Orientado al futuro", "Pragmático"],
+        ["Experiencia", "Observación", "Conceptualización", "Experimentación"],
+        ["Intenso", "Reservado", "Racional", "Responsable"]
+    ];
+
+    const rows = questions.length;
+    let scores = Array(rows).fill(null).map(() => [0, 0, 0, 0]);
+
+    function render() {
+        const body = document.getElementById("testBody");
+        const mobile = document.getElementById("mobileBody");
+        body.innerHTML = "";
+        mobile.innerHTML = "";
+
+        questions.forEach((qRow, r) => {
+            // Render Desktop
+            let tr = document.createElement("tr");
+            tr.innerHTML = `<td class="border p-3 font-bold bg-slate-50">${r + 1}</td>`;
+            qRow.forEach((text, c) => {
+                tr.innerHTML += `
+                <td class="border p-3">
+                    <p class="font-semibold text-indigo-900">${text}</p>
+                    <div class="flex gap-1 justify-center mt-3">
+                        ${[1, 2, 3, 4].map(v => `
+                            <button onclick="setVal(${r},${c},${v})" 
+                            class="touch-target border text-xs px-2 py-1 rounded ${scores[r][c] == v ? 'btn-selected' : 'bg-white'}">
+                            ${v}
+                            </button>
+                        `).join("")}
+                    </div>
+                </td>`;
+            });
+            body.appendChild(tr);
+
+            // Render Mobile
+            let mDiv = document.createElement("div");
+            mDiv.className = "mobile-row";
+            mDiv.innerHTML = `<h3 class="font-bold mb-3 border-b pb-1 text-indigo-600">Pregunta ${r + 1}</h3>`;
+            qRow.forEach((text, c) => {
+                mDiv.innerHTML += `
+                <div class="mb-4">
+                    <p class="font-semibold text-sm mb-2">${text}</p>
+                    <div class="flex gap-2">
+                        ${[1, 2, 3, 4].map(v => `
+                            <button onclick="setVal(${r},${c},${v})" 
+                            class="touch-target border flex-1 py-2 rounded ${scores[r][c] == v ? 'btn-selected' : ''}">
+                            ${v}
+                            </button>
+                        `).join("")}
+                    </div>
+                </div>`;
+            });
+            mobile.appendChild(mDiv);
+        });
+    }
+
+    function setVal(r, c, v) {
+        const name = document.getElementById("studentName").value.trim();
+        if (!name) {
+            document.getElementById("nameError").classList.remove("hidden");
+            window.scrollTo({top: 0, behavior: 'smooth'});
+            return;
+        }
+
+        const row = scores[r];
+        const existingIdx = row.indexOf(v);
+        
+        // Si el valor ya existe en otra columna de la misma fila, lo borramos de allá
+        if (existingIdx !== -1 && existingIdx !== c) row[existingIdx] = 0;
+        
+        // Toggle: si hace clic en el mismo valor, lo quita, si no, lo pone
+        row[c] = (row[c] === v) ? 0 : v;
+
+        render();
+        updateProgress();
+        checkCompletion();
+    }
+
+    // Listener para el tooltip del nombre
+    document.getElementById("studentName").addEventListener("input", (e) => {
+        const hasValue = e.target.value.trim() !== "";
+        document.getElementById("nameTooltip").style.display = hasValue ? "none" : "inline-block";
+        document.getElementById("nameError").classList.toggle("hidden", hasValue);
+    });
+
+    function updateProgress() {
+        let completed = scores.filter(r => !r.includes(0)).length;
+        let percent = (completed / rows) * 100;
+        document.getElementById("progressBar").style.width = percent + "%";
+        document.getElementById("progressText").innerText = `${completed} de ${rows} filas completadas`;
+    }
+
+    function checkCompletion() {
+        const isComplete = scores.every(r => !r.includes(0));
+        if (isComplete) calculateResults();
+    }
+
+    function calculateResults() {
+        let EC = 0, OR = 0, CA = 0, EA = 0;
+        scores.forEach(r => {
+            EC += r[0]; OR += r[1]; CA += r[2]; EA += r[3];
+        });
+
+        const x = EA - OR;
+        const y = CA - EC;
+
+        let style = "";
+        if (x >= 0 && y >= 0) style = "🚀 ACOMODADOR";
+        else if (x < 0 && y >= 0) style = "🎨 DIVERGENTE";
+        else if (x < 0 && y < 0) style = "📚 ASIMILADOR";
+        else style = "🧩 CONVERGENTE";
+
+        showResults(style);
+    }
+
+    function showResults(style) {
+        const name = document.getElementById("studentName").value.trim();
+        document.getElementById("resTitle").innerText = style;
+        document.getElementById("studentResult").innerText = "👤 Aprendiz: " + name;
+
+        const pedagogicData = {
+            "🎨 DIVERGENTE": "Aprende mejor observando situaciones desde distintas perspectivas y participando en discusiones.",
+            "📚 ASIMILADOR": "Prefiere información estructurada, teoría y análisis conceptual.",
+            "🧩 CONVERGENTE": "Destaca aplicando ideas en la práctica y resolviendo problemas.",
+            "🚀 ACOMODADOR": "Aprende principalmente mediante la acción directa y la experiencia práctica."
+        };
+
+        document.getElementById("styleContent").innerHTML = `
+            <div class="bg-white text-gray-800 rounded-xl p-6 grid md:grid-cols-3 gap-6">
+                <div><h4 class="font-bold text-indigo-600 mb-2">🧠 Características</h4><ul class="text-sm list-disc ml-4"><li>Sociable</li><li>Genera ideas</li><li>Empático</li></ul></div>
+                <div><h4 class="font-bold text-green-600 mb-2">🚀 Aprendes mejor</h4><ul class="text-sm list-disc ml-4"><li>Lluvia de ideas</li><li>Trabajo en equipo</li><li>Ejemplos reales</li></ul></div>
+                <div><h4 class="font-bold text-red-500 mb-2">⚠️ Desafíos</h4><ul class="text-sm list-disc ml-4"><li>Teoría pura</li><li>Trabajo solitario</li><li>Falta de feedback</li></ul></div>
+            </div>`;
+
+        document.getElementById("pedagogicContent").innerHTML = `<h4 class="font-bold mb-2">📘 Interpretación</h4><p>${pedagogicData[style] || ""}</p>`;
+        document.getElementById("resultContainer").classList.remove("hidden");
+        document.getElementById("resultContainer").scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function downloadImage() {
+        html2canvas(document.getElementById("captureArea"), { scale: 2 }).then(canvas => {
+            const link = document.createElement("a");
+            link.download = `Resultado_Kolb_${document.getElementById("studentName").value}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        });
+    }
+
+    render();
 </script>
-
 </body>
 </html>
