@@ -3,110 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Test de Kolb - Estilos de Aprendizaje</title>
+    <title>Evaluación del Estilo de Aprendizaje - Kolb</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <style>
-        .btn-selected { background: #4f46e5 ! competitiveness: color: white; transform: scale(1.05); box-shadow: 0 4px 10px rgba(79, 70, 229, 0.4); border-color: #4f46e5; }
-        .touch-target { min-width: 42px; min-height: 42px; transition: all 0.2s; }
-        .option-desc { font-size: 11px; color: #64748b; margin-top: 2px; line-height: 1.2; display: block; }
-        .sticky-progress { position: sticky; top: 0; z-index: 1000; background: rgba(255,255,255,0.9); backdrop-filter: blur(8px); padding: 12px; border-bottom: 2px solid #e5e7eb; }
-        .mobile-row { border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; margin-bottom: 16px; background: white; }
+        .btn-selected { background: #4f46e5; color: white; transform: scale(1.1); box-shadow: 0 4px 10px rgba(0,0,0,.2); }
+        .touch-target { min-width: 44px; min-height: 44px; }
+        .option-desc { font-size: 11px; color: #64748b; margin-top: 4px; line-height: 1.2; }
+        .progress-bar { transition: width .4s ease; }
+        .sticky-progress { position: sticky; top: 0; z-index: 1000; background: white; padding: 10px; border-bottom: 1px solid #e5e7eb; }
+        .mobile-row { border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px; margin-bottom: 12px; background: white; }
         @media (max-width: 768px) { .desktop-table { display: none; } .mobile-view { display: block; } }
         @media (min-width: 769px) { .mobile-view { display: none; } }
+        .name-tooltip { display: inline-block; margin-top: 6px; background: #4f46e5; color: white; padding: 6px 10px; border-radius: 8px; font-size: 12px; animation: bounce 1.4s infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-10">
+<body class="bg-slate-50 min-h-screen">
 
-<div class="max-w-6xl mx-auto bg-white shadow-2xl min-h-screen">
-    <div class="bg-indigo-700 p-8 text-white">
-        <h1 class="text-3xl font-black uppercase tracking-tight">Inventario de Estilos de Aprendizaje</h1>
-        <p class="text-indigo-100 opacity-90 mt-2">Basado en el Modelo de David Kolb</p>
-        
-        <div class="mt-6 grid grid-cols-2 md:grid-cols-4 gap-2 text-center text-[10px] font-bold uppercase">
-            <div class="bg-white/10 p-2 rounded">4: Lo que mejor te describe</div>
-            <div class="bg-white/10 p-2 rounded">3: Lo que sigue en orden</div>
-            <div class="bg-white/10 p-2 rounded">2: Lo que menos te describe</div>
-            <div class="bg-white/10 p-2 rounded">1: Lo que no te describe</div>
+<div class="max-w-5xl mx-auto bg-white shadow-xl">
+    <div class="bg-indigo-600 p-8 text-white text-center">
+        <h1 class="text-3xl font-extrabold uppercase">🧠 Evaluación del Estilo de Aprendizaje</h1>
+        <p class="mt-1 text-indigo-100">Modelo de David Kolb</p>
+        <div class="mt-4 flex flex-wrap justify-center gap-3 text-xs">
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">4 ⭐ Muy representativo</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">3 👍 Bastante</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">2 🤔 Poco</span>
+            <span class="bg-white/20 px-3 py-1 rounded-full font-bold">1 ❌ Nada</span>
         </div>
     </div>
 
-    <div class="p-6 md:p-10">
-        <div class="mb-8 max-w-md">
-            <label class="block text-sm font-bold text-slate-700 mb-1">Nombre Completo del Aprendiz</label>
-            <input id="studentName" type="text" class="w-full border-2 border-slate-200 rounded-lg p-3 focus:border-indigo-500 outline-none transition-all" placeholder="Ej. Juan Pérez">
-            <p id="nameError" class="text-red-500 text-xs mt-2 hidden font-medium">⚠️ Por favor, ingresa tu nombre para procesar los resultados.</p>
+    <div class="p-6 md:p-8">
+        <div class="mb-6">
+            <label class="font-bold text-sm">👤 Nombre del aprendiz</label>
+            <input id="studentName" type="text" required class="w-full border rounded p-2 mt-1" placeholder="Escribe tu nombre">
+            <div id="nameTooltip" class="name-tooltip">👉 Escribe tu nombre para comenzar el test</div>
+            <p id="nameError" class="text-red-500 text-xs mt-1 hidden">⚠️ Debes escribir tu nombre antes de responder.</p>
         </div>
 
-        <div class="sticky-progress mb-8 rounded-xl shadow-sm">
-            <div class="flex justify-between items-end mb-2">
-                <h2 class="text-sm font-bold text-indigo-900 uppercase">Progreso del Test</h2>
-                <span id="progressText" class="text-xs font-bold text-indigo-600">0 de 9 filas</span>
-            </div>
-            <div class="w-full bg-slate-200 rounded-full h-3">
-                <div id="progressBar" class="bg-indigo-600 h-3 rounded-full transition-all duration-500" style="width:0%"></div>
-            </div>
+        <div class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 text-sm mb-6">
+            <h2 class="font-bold mb-2">📋 Instrucciones</h2>
+            <ul class="list-disc ml-6 space-y-1">
+                <li>En cada fila debes asignar un número del <strong>1 al 4</strong>.</li>
+                <li><strong>4</strong> es la opción que más te representa, <strong>1</strong> la que menos.</li>
+                <li>No puedes repetir números dentro de la misma fila.</li>
+            </ul>
         </div>
 
-        <table class="desktop-table w-full border-collapse border-2 border-slate-200 shadow-sm">
-            <thead>
-                <tr class="bg-slate-800 text-white text-[11px] uppercase tracking-wider">
-                    <th class="p-4 border border-slate-700 w-16">Fila</th>
-                    <th class="p-4 border border-slate-700">Columna 1 (EC)</th>
-                    <th class="p-4 border border-slate-700">Columna 2 (OR)</th>
-                    <th class="p-4 border border-slate-700">Columna 3 (CA)</th>
-                    <th class="p-4 border border-slate-700">Columna 4 (EA)</th>
+        <div class="sticky-progress">
+            <h2 class="text-lg font-bold mb-2">📊 Progreso</h2>
+            <div class="w-full bg-gray-200 rounded-full h-4">
+                <div id="progressBar" class="progress-bar bg-indigo-600 h-4 rounded-full" style="width:0%"></div>
+            </div>
+            <p id="progressText" class="text-xs mt-2 text-gray-500">0 de 9 filas completadas</p>
+        </div>
+
+        <table class="desktop-table w-full border-collapse text-sm mt-4">
+            <thead class="bg-slate-100 text-xs uppercase font-bold text-center">
+                <tr>
+                    <th class="border p-3 text-left w-12">Fila</th>
+                    <th class="border p-3">🎯 EC</th>
+                    <th class="border p-3">👀 OR</th>
+                    <th class="border p-3">🧠 CA</th>
+                    <th class="border p-3">✋ EA</th>
                 </tr>
             </thead>
-            <tbody id="testBody" class="text-sm"></tbody>
+            <tbody id="testBody"></tbody>
         </table>
 
-        <div id="mobileBody" class="mobile-view"></div>
+        <div id="mobileBody" class="mobile-view mt-4"></div>
 
-        <div id="resultContainer" class="hidden mt-12 animate-fade-in">
-            <div id="captureArea" class="bg-white border-4 border-indigo-600 rounded-3xl overflow-hidden shadow-2xl">
-                <div class="bg-indigo-600 p-6 text-center text-white">
-                    <h2 id="resTitle" class="text-4xl font-black mb-1"></h2>
-                    <p id="studentResult" class="text-lg opacity-90"></p>
-                </div>
-                
-                <div class="p-8">
-                    <div id="styleContent" class="mb-8"></div>
-                    <div class="bg-slate-50 border-l-4 border-indigo-500 p-6 rounded-r-xl">
-                        <h4 class="font-bold text-indigo-900 mb-2 uppercase text-sm">Interpretación según David Kolb:</h4>
-                        <p id="pedagogicText" class="text-slate-700 leading-relaxed"></p>
-                    </div>
-                </div>
+        <div id="resultContainer" class="hidden mt-10">
+            <div id="captureArea" class="bg-indigo-600 text-white shadow-2xl rounded-xl p-8">
+                <h3 class="text-3xl font-black mb-2 text-center" id="resTitle"></h3>
+                <p id="studentResult" class="text-center mb-6"></p>
+                <div id="styleContent"></div>
+                <div id="pedagogicContent" class="mt-6 bg-white text-gray-800 rounded-xl p-6"></div>
             </div>
-
-            <div class="mt-8 flex flex-col sm:flex-row gap-4">
-                <button onclick="downloadImage()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-4 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1">
-                    📥 Descargar Resultado (PNG)
-                </button>
-                <button onclick="window.print()" class="flex-1 bg-slate-800 hover:bg-slate-900 text-white py-4 rounded-xl font-bold shadow-lg transition-all transform hover:-translate-y-1">
-                    📄 Guardar como PDF
-                </button>
+            <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <button onclick="downloadImage()" class="bg-emerald-600 text-white p-4 rounded-xl font-bold hover:bg-emerald-700">📥 Descargar imagen</button>
+                <button onclick="window.print()" class="bg-slate-800 text-white p-4 rounded-xl font-bold hover:bg-slate-900">📄 Guardar PDF</button>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Textos exactos extraídos del PDF de Kolb
-    const kolbRows = [
-        ["Discriminando (EC)", "Ensayando (OR)", "Analizando (CA)", "Practicando (EA)"],
-        ["Receptivo (EC)", "Imparcial (OR)", "Analítico (CA)", "Imparcial (EA)"], // Nota: El PDF repite imparcial en fila 2
-        ["Sintiendo (EC)", "Observando (OR)", "Pensando (CA)", "Haciendo (EA)"],
-        ["Aceptando (EC)", "Arriesgando (OR)", "Evaluando (CA)", "Consciente (EA)"],
-        ["Intuitivo (EC)", "Productivo (OR)", "Lógico (CA)", "Cuestionador (EA)"],
-        ["Abstracto (EC)", "Observador (OR)", "Concreto (CA)", "Activo (EA)"],
-        ["Orientado al presente (EC)", "Reflexivo (OR)", "Orientado al futuro (CA)", "Pragmático (EA)"],
-        ["Experiencia (EC)", "Observación (OR)", "Conceptualización (CA)", "Experimentación (EA)"],
-        ["Intenso (EC)", "Reservado (OR)", "Racional (CA)", "Responsable (EA)"]
+    const kolbData = [
+        [
+            ["Discriminando (EC)", "Me fío de mis sensaciones"],
+            ["Ensayando (OR)", "Miro y escucho atentamente"],
+            ["Analizando (CA)", "Pienso en las ideas y conceptos"],
+            ["Practicando (EA)", "Hago las cosas y busco resultados"]
+        ],
+        [
+            ["Receptivo (EC)", "Acepto nuevas experiencias"],
+            ["Imparcial (OR)", "Observo sin prejuicios"],
+            ["Analítico (CA)", "Descompongo los problemas"],
+            ["Imparcial (EA)", "Actúo sobre la situación"]
+        ],
+        [
+            ["Sintiendo (EC)", "Sigo mis corazonadas e instintos"],
+            ["Observando (OR)", "Miro bien antes de actuar"],
+            ["Pensando (CA)", "Uso el razonamiento lógico"],
+            ["Haciendo (EA) ", "Me gusta estar en movimiento"]
+        ],
+        [
+            ["Aceptando (EC)", "Acepto lo que viene sin resistencia"],
+            ["Arriesgando (OR)", "Pruebo nuevas soluciones"],
+            ["Evaluando (CA)", "Analizo las consecuencias"],
+            ["Consciente (EA)", "Sé bien lo que estoy haciendo"]
+        ],
+        [
+            ["Intuitivo (EC)", "Actúo por corazonadas"],
+            ["Productivo (OR)", "Me gusta ver resultados"],
+            ["Lógico (CA)", "Busco la verdad racional"],
+            ["Cuestionador (EA)", "Pregunto por qué de las cosas"]
+        ],
+        [
+            ["Abstracto (EC)", "Uso conceptos y modelos"],
+            ["Observador (OR)", "Escucho con cuidado a otros"],
+            ["Concreto (CA)", "Me baso en hechos reales"],
+            ["Activo (EA)", "Busco aplicaciones útiles"]
+        ],
+        [
+            ["Presente (EC)", "Vivo el momento actual"],
+            ["Reflexivo (OR)", "Evalúo lo sucedido"],
+            ["Futurista (CA)", "Planeo los siguientes pasos"],
+            ["Pragmático (EA)", "Llevo a cabo el plan"]
+        ],
+        [
+            ["Experiencia (EC)", "Me involucro en la tarea"],
+            ["Observación (OR)", "Noto pequeños detalles"],
+            ["Conceptualización (CA)", "Organizo mis pensamientos"],
+            ["Experimentación (EA)", "Finalizo lo que empiezo"]
+        ],
+        [
+            ["Intenso (EC)", "Actúo con mucha energía"],
+            ["Reservado (OR)", "Reviso todo dos veces"],
+            ["Racional (CA)", "Sigo un orden y método"],
+            ["Responsable (EA)", "Me aseguro que funcione"]
+        ]
     ];
 
-    const rowCount = kolbRows.length;
-    let scores = Array(rowCount).fill(null).map(() => [0, 0, 0, 0]);
+    const rows = kolbData.length;
+    let scores = Array(rows).fill(null).map(() => [0, 0, 0, 0]);
 
     function render() {
         const body = document.getElementById("testBody");
@@ -114,124 +155,126 @@
         body.innerHTML = "";
         mobile.innerHTML = "";
 
-        kolbRows.forEach((row, rIdx) => {
-            // Desktop
+        kolbData.forEach((rowOptions, r) => {
+            // Render Desktop
             let tr = document.createElement("tr");
-            tr.className = rIdx % 2 === 0 ? "bg-white" : "bg-slate-50";
-            tr.innerHTML = `<td class="p-4 border border-slate-200 font-bold text-center text-indigo-600 bg-slate-100">${rIdx + 1}</td>`;
-            
-            row.forEach((text, cIdx) => {
+            tr.innerHTML = `<td class="border p-3 font-bold bg-slate-50 text-center">${String.fromCharCode(65 + r)}</td>`;
+            rowOptions.forEach((opt, c) => {
                 tr.innerHTML += `
-                <td class="p-4 border border-slate-200">
-                    <div class="text-center">
-                        <span class="font-bold text-slate-800 block mb-3">${text}</span>
-                        <div class="flex justify-center gap-1">
-                            ${[1, 2, 3, 4].map(v => `
-                                <button onclick="selectScore(${rIdx}, ${cIdx}, ${v})" 
-                                class="touch-target border-2 text-xs font-bold rounded-md w-10 ${scores[rIdx][cIdx] === v ? 'btn-selected' : 'border-slate-200 bg-white text-slate-500 hover:border-indigo-300'}">
-                                    ${v}
-                                </button>
-                            `).join("")}
-                        </div>
+                <td class="border p-3 text-center">
+                    <p class="font-bold text-indigo-900">${opt[0]}</p>
+                    <p class="option-desc">${opt[1]}</p>
+                    <div class="flex gap-1 justify-center mt-2">
+                        ${[1, 2, 3, 4].map(v => `
+                            <button onclick="setVal(${r},${c},${v})" 
+                            class="touch-target border px-2 py-1 rounded ${scores[r][c] == v ? 'btn-selected' : 'bg-white'}">
+                            ${v}
+                            </button>
+                        `).join("")}
                     </div>
                 </td>`;
             });
             body.appendChild(tr);
 
-            // Mobile
-            let mCard = document.createElement("div");
-            mCard.className = "mobile-row shadow-sm";
-            mCard.innerHTML = `<h3 class="font-black text-indigo-600 mb-4 border-b-2 border-indigo-50 pb-2">PREGUNTA ${rIdx + 1}</h3>`;
-            row.forEach((text, cIdx) => {
-                mCard.innerHTML += `
-                <div class="mb-5">
-                    <p class="font-bold text-slate-700 mb-2">${text}</p>
-                    <div class="flex justify-between gap-2">
+            // Render Mobile
+            let mDiv = document.createElement("div");
+            mDiv.className = "mobile-row";
+            mDiv.innerHTML = `<h3 class="font-bold mb-2">Fila ${String.fromCharCode(65 + r)}</h3>`;
+            rowOptions.forEach((opt, c) => {
+                mDiv.innerHTML += `
+                <div class="mb-4">
+                    <p class="font-bold text-sm">${opt[0]}</p>
+                    <p class="option-desc mb-2">${opt[1]}</p>
+                    <div class="flex gap-2">
                         ${[1, 2, 3, 4].map(v => `
-                            <button onclick="selectScore(${rIdx}, ${cIdx}, ${v})" 
-                            class="touch-target border-2 flex-1 font-bold rounded-xl py-2 ${scores[rIdx][cIdx] === v ? 'btn-selected' : 'border-slate-200 bg-slate-50 text-slate-400'}">
-                                ${v}
+                            <button onclick="setVal(${r},${c},${v})" 
+                            class="touch-target border flex-1 py-1 rounded ${scores[r][c] == v ? 'btn-selected' : ''}">
+                            ${v}
                             </button>
                         `).join("")}
                     </div>
                 </div>`;
             });
-            mobile.appendChild(mCard);
+            mobile.appendChild(mDiv);
         });
     }
 
-    function selectScore(r, c, v) {
+    function setVal(r, c, v) {
         const name = document.getElementById("studentName").value.trim();
-        if (!name) {
+        if (name === "") {
             document.getElementById("nameError").classList.remove("hidden");
             window.scrollTo({top: 0, behavior: 'smooth'});
             return;
         }
 
         const row = scores[r];
-        const prevIdx = row.indexOf(v);
-        
-        // Regla: No repetir números en la misma fila
-        if (prevIdx !== -1 && prevIdx !== c) row[prevIdx] = 0;
-        
-        // Toggle
-        row[c] = (row[c] === v) ? 0 : v;
+        const idx = row.indexOf(v);
+        if (idx != -1 && idx != c) row[idx] = 0;
+        row[c] = (row[c] == v) ? 0 : v;
 
         render();
-        updateUI();
+        updateProgress();
+        checkCompletion();
     }
 
-    function updateUI() {
-        const completed = scores.filter(r => !r.includes(0)).length;
-        const percent = (completed / rowCount) * 100;
+    function updateProgress() {
+        let completed = scores.filter(r => !r.includes(0)).length;
+        let percent = (completed / rows) * 100;
         document.getElementById("progressBar").style.width = percent + "%";
-        document.getElementById("progressText").innerText = `${completed} de 9 filas`;
-
-        if (completed === rowCount) calculateResults();
+        document.getElementById("progressText").innerText = `${completed} de ${rows} filas completadas`;
     }
 
-    function calculateResults() {
+    function checkCompletion() {
+        if (scores.every(r => !r.includes(0))) {
+            const results = calculate();
+            showResults(results);
+        }
+    }
+
+    function calculate() {
         let EC = 0, OR = 0, CA = 0, EA = 0;
         scores.forEach(r => {
             EC += r[0]; OR += r[1]; CA += r[2]; EA += r[3];
         });
-
-        // Ejes de Kolb
-        const ejeX = EA - OR; // Experimentación Activa - Observación Reflexiva
-        const ejeY = CA - EC; // Conceptualización Abstracta - Experiencia Concreta
-
-        let result = { title: "", desc: "", color: "" };
-
-        if (ejeX >= 0 && ejeY >= 0) {
-            result = { title: "ACOMODADOR", color: "text-orange-500", desc: "Te destacas por tu capacidad de hacer cosas, llevar a cabo planes y experimentos e involucrarte en experiencias nuevas. Sueles ser más arriesgado y te adaptas bien a las circunstancias inmediatas." };
-        } else if (ejeX < 0 && ejeY >= 0) {
-            result = { title: "DIVERGENTE", color: "text-blue-500", desc: "Te destacas por tu gran capacidad imaginativa y por considerar situaciones desde muchos puntos de vista. Eres bueno organizando relaciones, eres empático y sueles ser muy creativo." };
-        } else if (ejeX < 0 && ejeY < 0) {
-            result = { title: "ASIMILADOR", color: "text-purple-500", desc: "Te destacas por tu capacidad para crear modelos teóricos. Se te da bien el razonamiento inductivo y sintetizar observaciones diferentes en explicaciones integradas. Prefieres las ideas a las personas." };
-        } else {
-            result = { title: "CONVERGENTE", color: "text-emerald-500", desc: "Te destacas por la aplicación práctica de las ideas. Eres organizado, sueles razonar mediante el pensamiento hipotético deductivo y te orientas más hacia las tareas técnicas que a las sociales." };
-        }
-
-        showFinal(result);
+        const x = EA - OR;
+        const y = CA - EC;
+        let style = "";
+        if (x >= 0 && y >= 0) style = "🚀 ACOMODADOR";
+        else if (x < 0 && y >= 0) style = "🎨 DIVERGENTE";
+        else if (x < 0 && y < 0) style = "📚 ASIMILADOR";
+        else style = "🧩 CONVERGENTE";
+        return style;
     }
 
-    function showFinal(res) {
-        document.getElementById("resTitle").innerText = res.title;
-        document.getElementById("studentResult").innerText = `Perfil de ${document.getElementById("studentName").value}`;
-        document.getElementById("pedagogicText").innerText = res.desc;
-        
-        document.getElementById("styleContent").innerHTML = `
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
-                <div class="p-4 bg-slate-50 rounded-xl"><p class="text-[10px] font-bold text-slate-400 uppercase">Exp. Concreta (EC)</p><p class="text-2xl font-black text-indigo-600">${scores.reduce((a,b)=>a+b[0],0)}</p></div>
-                <div class="p-4 bg-slate-50 rounded-xl"><p class="text-[10px] font-bold text-slate-400 uppercase">Obs. Reflexiva (OR)</p><p class="text-2xl font-black text-indigo-600">${scores.reduce((a,b)=>a+b[1],0)}</p></div>
-                <div class="p-4 bg-slate-50 rounded-xl"><p class="text-[10px] font-bold text-slate-400 uppercase">Concep. Abstracta (CA)</p><p class="text-2xl font-black text-indigo-600">${scores.reduce((a,b)=>a+b[2],0)}</p></div>
-                <div class="p-4 bg-slate-50 rounded-xl"><p class="text-[10px] font-bold text-slate-400 uppercase">Exp. Activa (EA)</p><p class="text-2xl font-black text-indigo-600">${scores.reduce((a,b)=>a+b[3],0)}</p></div>
-            </div>
-        `;
+    function showResults(style) {
+        const name = document.getElementById("studentName").value.trim();
+        document.getElementById("resTitle").innerText = style;
+        document.getElementById("studentResult").innerText = "👤 Aprendiz: " + name;
 
+        const info = {
+            "🎨 DIVERGENTE": "Aprende mejor observando situaciones desde distintas perspectivas y participando en discusiones.",
+            "📚 ASIMILADOR": "Prefiere información estructurada, teoría y análisis conceptual.",
+            "🧩 CONVERGENTE": "Destaca aplicando ideas en la práctica y resolviendo problemas.",
+            "🚀 ACOMODADOR": "Aprende principalmente mediante la acción directa y la experiencia práctica."
+        };
+
+        document.getElementById("styleContent").innerHTML = `
+            <div class="bg-white text-gray-800 rounded-xl p-6 grid md:grid-cols-3 gap-6">
+                <div><h4 class="font-bold text-indigo-600 mb-2">🧠 Características</h4><ul class="text-sm"><li>Enfoque creativo</li><li>Procesamiento visual</li><li>Aprendizaje empático</li></ul></div>
+                <div><h4 class="font-bold text-green-600 mb-2">🚀 Aprendes mejor cuando</h4><ul class="text-sm"><li>Hay actividades dinámicas</li><li>Puedes participar</li><li>Hay ejemplos reales</li></ul></div>
+                <div><h4 class="font-bold text-red-500 mb-2">⚠️ Desafíos</h4><ul class="text-sm"><li>Teoría sin práctica</li><li>Falta de feedback</li><li>Ambientes rígidos</li></ul></div>
+            </div>`;
+
+        document.getElementById("pedagogicContent").innerHTML = `<h4 class="font-bold mb-2">📘 Interpretación</h4><p>${info[style]}</p>`;
         document.getElementById("resultContainer").classList.remove("hidden");
         document.getElementById("resultContainer").scrollIntoView({ behavior: 'smooth' });
     }
+
+    document.getElementById("studentName").addEventListener("input", (e) => {
+        const hasValue = e.target.value.trim() !== "";
+        document.getElementById("nameTooltip").style.display = hasValue ? "none" : "inline-block";
+        document.getElementById("nameError").classList.toggle("hidden", hasValue);
+    });
 
     function downloadImage() {
         html2canvas(document.getElementById("captureArea"), { scale: 2 }).then(canvas => {
@@ -242,14 +285,10 @@
         });
     }
 
-    document.getElementById("studentName").addEventListener("input", (e) => {
-        if(e.target.value.trim() !== "") document.getElementById("nameError").classList.add("hidden");
-    });
-
     render();
 </script>
-
 </body>
 </html>
+
 
 
